@@ -18,7 +18,7 @@ class CommentSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = ('id', 'text', 'created', 'author', 'post')
+        fields = '__all__'
         model = Comment
         read_only_fields = ('post',)
 
@@ -26,18 +26,24 @@ class CommentSerializer(serializers.ModelSerializer):
 class GroupSerializer(serializers.ModelSerializer):
 
     class Meta:
-        fields = ('id', 'title', 'slug', 'description')
+        fields = '__all__'
         model = Group
 
 
 class FollowSerializer(serializers.ModelSerializer):
     user = SlugRelatedField(
-        read_only=True, slug_field='username'
+        read_only=True, slug_field='username',
     )
     following = SlugRelatedField(
         read_only=True, slug_field='username'
     )
 
+    def validate(self, data):
+        if (data['user'] != data['following']) and not (
+            Follow.objects.filter(user=self.request.user, following=data['following'])):
+            return data
+        raise serializers.ValidationError('На себя нельзя подписаться')
+
     class Meta:
-        fields = ('user', 'following')
+        fields = '__all__'
         model = Follow
