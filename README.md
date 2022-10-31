@@ -46,3 +46,38 @@ python3 manage.py migrate
 python3 manage.py runserver
 ```
 
+### Примеры команд для API:
+Получение списка всех постов с пагинацией
+
+```
+GET http://127.0.0.1:8000/api/v1/posts/
+```
+
+Создание нового поста
+
+```
+POST http://127.0.0.1:8000/api/v1/posts/
+```
+
+Получение токена для пользователя
+
+```
+POST http://127.0.0.1:8000/api/auth/jwt/create/
+```
+
+Получение всех комментариев к записи
+
+```
+GET http://127.0.0.1:8000/api/v1/posts/<post_id>/comments
+```
+
+Добавление комментария к записи
+```
+POST http://127.0.0.1:8000/api/v1/posts/<post_id>/comments
+```
+
+Подписка на пользователя
+
+```
+POST http://127.0.0.1:8000/api/v1/follow
+```
