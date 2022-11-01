@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework import pagination, permissions, viewsets, filters, mixins
 
@@ -6,8 +5,6 @@ from posts.models import Follow, Group, Post
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (CommentSerializer, FollowSerializer, GroupSerializer,
                           PostSerializer)
-
-User = get_user_model()
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -54,13 +51,4 @@ class FollowGetPostViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
         return self.request.user.follow.all()
 
     def perform_create(self, serializer):
-        # if not serializer.initial_data.get('following'):
-        #     raise serializers.ValidationError('111')
-        follower = get_object_or_404(
-            User, username=self.request.data['following'])
-        # user = self.request.user
-        # if (user != follower) and not (Follow.objects.filter(
-        #                                user=user, following=follower)):
-        #     return serializer.save(user=user, following=follower)
-        # raise serializers.ValidationError('На себя нельзя подписаться')
-        serializer.save(user=self.request.user, following=follower)
+        serializer.save(user=self.request.user)

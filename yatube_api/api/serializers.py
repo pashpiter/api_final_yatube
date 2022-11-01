@@ -1,7 +1,10 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 
 from posts.models import Comment, Follow, Group, Post
+
+User = get_user_model()
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -35,12 +38,15 @@ class FollowSerializer(serializers.ModelSerializer):
         read_only=True, slug_field='username',
     )
     following = SlugRelatedField(
-        read_only=True, slug_field='username'
+        slug_field='username', queryset=User.objects.all()
     )
 
     def validate(self, data):
-        if (data['user'] != data['following']) and not (
-            Follow.objects.filter(user=self.request.user, following=data['following'])):
+        if (
+            self.context['request'].user != data['following']) and not (
+                Follow.objects.filter(
+                    user=self.context['request'].user,
+                    following=data['following'])):
             return data
         raise serializers.ValidationError('На себя нельзя подписаться')
 
